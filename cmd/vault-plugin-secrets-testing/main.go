@@ -1,8 +1,9 @@
 package main
 
 import (
-	secrettesting "github.com/hashicorp/vault-plugin-secrets-testing"
 	"os"
+
+	secrettesting "github.com/hashicorp/vault-plugin-secrets-testing"
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/vault/api"

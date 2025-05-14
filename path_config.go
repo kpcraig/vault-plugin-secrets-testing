@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/vault/sdk/rotation"
+
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/automatedrotationutil"
 	"github.com/hashicorp/vault/sdk/logical"
@@ -56,6 +58,33 @@ func (b *backend) pathConfigCrupdate(ctx context.Context, req *logical.Request, 
 	}
 
 	config.ParseAutomatedRotationFields(data)
+
+	if config.ShouldDeregisterRotationJob() {
+		// rotOp = rotation.PerformedDeregistration
+		deregisterReq := &rotation.RotationJobDeregisterRequest{
+			MountPoint: req.MountPoint,
+			ReqPath:    req.Path,
+		}
+		err := b.System().DeregisterRotationJob(ctx, deregisterReq)
+		if err != nil {
+			return logical.ErrorResponse("error de-registering rotation job: %s", err), nil
+		}
+	} else if config.ShouldRegisterRotationJob() {
+		// rotOp = rotation.PerformedRegistration
+		req := &rotation.RotationJobConfigureRequest{
+			Name:             rootRotationJobName,
+			MountPoint:       req.MountPoint,
+			ReqPath:          req.Path,
+			RotationSchedule: config.RotationSchedule,
+			RotationWindow:   config.RotationWindow,
+			RotationPeriod:   config.RotationPeriod,
+		}
+
+		_, err := b.System().RegisterRotationJob(ctx, req)
+		if err != nil {
+			return logical.ErrorResponse("error registering rotation job: %s", err), nil
+		}
+	}
 
 	bt, err := json.Marshal(config)
 	if err != nil {

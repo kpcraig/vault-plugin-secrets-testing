@@ -3,8 +3,9 @@ package secrettesting
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
@@ -18,7 +19,6 @@ type backend struct {
 
 // Factory creates a backend - this is part of the hashicorp plugin sdk
 func Factory(ctx context.Context, conf *logical.BackendConfig) (logical.Backend, error) {
-
 	b := Backend(conf)
 	err := b.Setup(ctx, conf)
 	if err != nil {
@@ -44,10 +44,10 @@ func Backend(_ *logical.BackendConfig) *backend {
 		},
 		Paths: framework.PathAppend(
 			pathConfig(b),
-			//		b.pathStaticRoles(),
+			pathStaticRole(b),
 			//		b.pathStaticCredsCreate(),
 			//		b.pathListStaticRoles(),
-			//b.pathRotateCredentials(),
+			// b.pathRotateCredentials(),
 		),
 		BackendType: logical.TypeLogical,
 		//
