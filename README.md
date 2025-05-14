@@ -4,7 +4,7 @@ This is a testing plugin for Hashicorp Vault. It mostly exists as a way to have 
 having an external service, or modifying a plugin that has a lot of other considerations. I assume if you're looking
 at this you know at least a little about plugin development.
 
-To the extent that it matters, 
+To the extent that it matters, this was written for my job at Hashicorp and as such is their code.
 
 ## Building
 ```sh
