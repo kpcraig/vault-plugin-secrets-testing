@@ -1,6 +1,7 @@
 package main
 
 import (
+	secrettesting "github.com/hashicorp/vault-plugin-secrets-testing"
 	"os"
 
 	"github.com/hashicorp/go-hclog"
@@ -21,7 +22,7 @@ func main() {
 		// compatibility with Vault versions that don’t support plugin AutoMTLS
 		TLSProviderFunc: tlsProviderFunc,
 		// TODO: Add the plugin's Factory function here, e.g.:
-		// BackendFactoryFunc: vault-plugin-scaffolding.Factory,
+		BackendFactoryFunc: secrettesting.Factory,
 	})
 	if err != nil {
 		logger := hclog.New(&hclog.LoggerOptions{})
