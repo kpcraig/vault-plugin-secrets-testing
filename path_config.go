@@ -52,6 +52,14 @@ func (b *backend) pathConfigCrupdate(ctx context.Context, req *logical.Request, 
 		config.Message = v.(string)
 	}
 
+	if v, ok := data.GetOk("username"); ok {
+		config.Username = v.(string)
+	}
+
+	if v, ok := data.GetOk("password"); ok {
+		config.Password = v.(string)
+	}
+
 	if v, ok := data.GetOk("low_check"); ok {
 		b.Logger().Info("low_check", "value", v.(int))
 		config.LowCheck = v.(int)
@@ -112,6 +120,8 @@ func (b *backend) pathConfigRead(ctx context.Context, req *logical.Request, data
 	responseData["message"] = config.Message
 	responseData["low_check"] = config.LowCheck
 	responseData["high_check"] = config.HighCheck
+	responseData["username"] = config.Username
+	responseData["password"] = config.Password // normally you wouldn't do this but this is fake data for testing
 
 	config.PopulateAutomatedRotationData(responseData)
 
@@ -139,6 +149,12 @@ func configFields() map[string]*framework.FieldSchema {
 		},
 		"high_check": {
 			Type: framework.TypeInt,
+		},
+		"username": {
+			Type: framework.TypeString,
+		},
+		"password": {
+			Type: framework.TypeString,
 		},
 	}
 
@@ -170,6 +186,8 @@ func getConfig(ctx context.Context, storage logical.Storage) (*configData, error
 // configData has all the data we store for configuration.
 type configData struct {
 	Message   string `json:"message"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
 	LowCheck  int    `json:"low_check"`
 	HighCheck int    `json:"high_check"`
 

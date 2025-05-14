@@ -2,8 +2,12 @@ package secrettesting
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math/rand/v2"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -60,7 +64,62 @@ func Backend(_ *logical.BackendConfig) *backend {
 }
 
 func (b *backend) rotateCredential(ctx context.Context, req *logical.Request) error {
-	b.Logger().Info("we got a rotate call", "req", req)
+	b.Logger().Info("we got a rotate call", "req", req.Path)
+
+	//if strings.HasPrefix(req.Path, PathStaticRole) {
+	//	b.Logger().Info("doing a static role rotation")
+	//} else {
+	//	b.Logger().Info("doing a root rotation")
+	//}
+
+	// get root creds
+	root, err := getConfig(ctx, req.Storage)
+	if err != nil {
+		return err
+	}
+
+	b.Logger().Info("rotating with credentials", "credential path", req.Path, "username", root.Username, "password", root.Password)
+	if strings.HasPrefix(req.Path, PathStaticRole) {
+		// get static role info
+		parts := strings.Split(req.Path, "/")
+		name := parts[1]
+
+		b.Logger().Info("updating static role", "name", name)
+		role, err := getStaticRole(ctx, req.Storage, name) // probably
+		if err != nil {
+			return err
+		}
+		pwd := strconv.FormatInt(int64(rand.Uint()), 36)
+		// call api
+		time.Sleep(3 * time.Second)
+		role.Password = pwd
+		b.Logger().Info("new password", "password", role.Password)
+
+		// save config
+		bt, _ := json.Marshal(role)
+		req.Storage.Put(ctx, &logical.StorageEntry{
+			Key:   PathStaticRole + "/" + name,
+			Value: bt,
+		})
+	} else if strings.HasPrefix(req.Path, PathConfig) {
+		// make new password
+		pwd := strconv.FormatInt(int64(rand.Uint()), 36)
+		// "call api"
+		time.Sleep(3 * time.Second)
+
+		// update credential
+		root.Password = pwd
+		b.Logger().Info("new password", "password", root.Password)
+
+		// save config
+		bt, _ := json.Marshal(root)
+		req.Storage.Put(ctx, &logical.StorageEntry{
+			Key:   PathConfig,
+			Value: bt,
+		})
+	} else {
+		return fmt.Errorf("unknown path: %s", req.Path)
+	}
 
 	return nil
 }

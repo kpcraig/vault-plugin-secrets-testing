@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/automatedrotationutil"
 	"github.com/hashicorp/vault/sdk/logical"
@@ -45,6 +44,12 @@ func staticRoleFields() map[string]*framework.FieldSchema {
 		"name": {
 			Type: framework.TypeLowerCaseString,
 		},
+		"username": {
+			Type: framework.TypeString,
+		},
+		"password": {
+			Type: framework.TypeString,
+		},
 	}
 
 	automatedrotationutil.AddAutomatedRotationFields(fields)
@@ -60,6 +65,14 @@ func (b *backend) pathStaticRoleCrupdate(ctx context.Context, req *logical.Reque
 	role, err := getStaticRole(ctx, req.Storage, name.(string))
 	if err != nil {
 		return nil, err
+	}
+
+	if v, ok := data.GetOk("username"); ok {
+		role.Username = v.(string)
+	}
+
+	if v, ok := data.GetOk("password"); ok {
+		role.Password = v.(string)
 	}
 
 	role.ParseAutomatedRotationFields(data)
@@ -105,6 +118,8 @@ func (b *backend) pathStaticRoleRead(ctx context.Context, req *logical.Request, 
 	}
 
 	d := map[string]interface{}{}
+	d["username"] = role.Username
+	d["password"] = role.Password
 
 	role.PopulateAutomatedRotationData(d)
 
@@ -137,5 +152,8 @@ func getStaticRole(ctx context.Context, storage logical.Storage, name string) (*
 }
 
 type staticRole struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+
 	automatedrotationutil.AutomatedRotationParams
 }
