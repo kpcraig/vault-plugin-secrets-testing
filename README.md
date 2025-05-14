@@ -4,6 +4,8 @@ This is a testing plugin for Hashicorp Vault. It mostly exists as a way to have 
 having an external service, or modifying a plugin that has a lot of other considerations. I assume if you're looking
 at this you know at least a little about plugin development.
 
+To the extent that it matters, 
+
 ## Building
 ```sh
 make dev
@@ -16,4 +18,19 @@ $ vault plugin register \
         -sha256=$SHA256 \
         -command="vault-plugin-secrets-testing" \
         secrets testing
-...
+```
+
+## Usage
+Currently, the weirdest feature this plugin has is a "tripwire" setting that will cause it to fail to initialize after
+a specified number of initialization attempts. Set the line by setting the `low_check` value to a non-zero in the root config:
+
+```sh
+vault write testing/config low_check=2
+```
+
+After that many initializations (the initial registration is the first), the plugin will fail to initialize, in
+particular during reload calls:
+
+```sh
+vault plugin reload -type=secret -plugin=testing -scope=global
+```
