@@ -21,7 +21,8 @@ $ vault plugin register \
 ```
 
 ## Usage
-Currently, the weirdest feature this plugin has is a "tripwire" setting that will cause it to fail to initialize after
+### Initialization Tripwire
+One feature this plugin has is a "tripwire" setting that will cause it to fail to initialize after
 a specified number of initialization attempts. Set the line by setting the `low_check` value to a non-zero in the root config:
 
 ```sh
@@ -34,3 +35,7 @@ particular during reload calls:
 ```sh
 vault plugin reload -type=secret -plugin=testing -scope=global
 ```
+
+###
+Another configuration is `rotation_wait` - setting this controls how long the plugin takes to "rotate" a credential when
+it recieves the request from the Rotation Manager. This is implemented as a `time.Sleep` call.

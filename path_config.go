@@ -3,8 +3,8 @@ package secrettesting
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/hashicorp/vault/sdk/rotation"
+	"time"
 
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/automatedrotationutil"
@@ -65,6 +65,11 @@ func (b *backend) pathConfigCrupdate(ctx context.Context, req *logical.Request, 
 		config.LowCheck = v.(int)
 	}
 
+	if v, ok := data.GetOk("rotation_wait"); ok {
+		durSec := v.(int)
+		config.RotationWait = time.Duration(durSec) * time.Second
+	}
+
 	config.ParseAutomatedRotationFields(data)
 
 	if config.ShouldDeregisterRotationJob() {
@@ -123,6 +128,8 @@ func (b *backend) pathConfigRead(ctx context.Context, req *logical.Request, data
 	responseData["username"] = config.Username
 	responseData["password"] = config.Password // normally you wouldn't do this but this is fake data for testing
 
+	responseData["rotation_wait"] = config.RotationWait.Seconds()
+
 	config.PopulateAutomatedRotationData(responseData)
 
 	return &logical.Response{
@@ -156,6 +163,9 @@ func configFields() map[string]*framework.FieldSchema {
 		"password": {
 			Type: framework.TypeString,
 		},
+		"rotation_wait": {
+			Type: framework.TypeDurationSecond,
+		},
 	}
 
 	// add the rotation_window etc fields to the request schema
@@ -185,11 +195,14 @@ func getConfig(ctx context.Context, storage logical.Storage) (*configData, error
 
 // configData has all the data we store for configuration.
 type configData struct {
-	Message   string `json:"message"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	LowCheck  int    `json:"low_check"`
-	HighCheck int    `json:"high_check"`
+	Message  string `json:"message"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+	LowCheck  int `json:"low_check"`
+	HighCheck int `json:"high_check"`
+
+	RotationWait time.Duration `json:"rotation_wait"`
 
 	automatedrotationutil.AutomatedRotationParams
 }

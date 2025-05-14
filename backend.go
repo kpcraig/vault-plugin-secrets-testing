@@ -91,7 +91,7 @@ func (b *backend) rotateCredential(ctx context.Context, req *logical.Request) er
 		}
 		pwd := strconv.FormatInt(int64(rand.Uint()), 36)
 		// call api
-		time.Sleep(3 * time.Second)
+		time.Sleep(root.RotationWait)
 		role.Password = pwd
 		b.Logger().Info("new password", "password", role.Password)
 
@@ -105,7 +105,7 @@ func (b *backend) rotateCredential(ctx context.Context, req *logical.Request) er
 		// make new password
 		pwd := strconv.FormatInt(int64(rand.Uint()), 36)
 		// "call api"
-		time.Sleep(3 * time.Second)
+		time.Sleep(root.RotationWait)
 
 		// update credential
 		root.Password = pwd
