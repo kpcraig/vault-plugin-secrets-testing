@@ -9,4 +9,7 @@ const (
 
 const InitializeCheckEntry = "check"
 
-const rootRotationJobName = "testing-secrets-root-creds"
+const (
+	rootRotationJobName   = "testing-secrets-root-creds"
+	staticRotationJobName = "testing-secrets-static-creds"
+)

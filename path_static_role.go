@@ -90,7 +90,7 @@ func (b *backend) pathStaticRoleCrupdate(ctx context.Context, req *logical.Reque
 	} else if role.ShouldRegisterRotationJob() {
 		// rotOp = rotation.PerformedRegistration
 		req := &rotation.RotationJobConfigureRequest{
-			Name:             rootRotationJobName,
+			Name:             staticRotationJobName,
 			MountPoint:       req.MountPoint,
 			ReqPath:          req.Path,
 			RotationSchedule: role.RotationSchedule,
