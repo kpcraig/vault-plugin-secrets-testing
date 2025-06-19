@@ -5,6 +5,7 @@ const Version = "0.0.1"
 const (
 	PathConfig     = "config"
 	PathStaticRole = "static-role"
+	PathStaticCred = "static-cred"
 )
 
 const InitializeCheckEntry = "check"

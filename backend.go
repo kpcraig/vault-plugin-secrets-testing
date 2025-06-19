@@ -49,6 +49,7 @@ func Backend(_ *logical.BackendConfig) *backend {
 		Paths: framework.PathAppend(
 			pathConfig(b),
 			pathStaticRole(b),
+			pathStaticCred(b),
 			//		b.pathStaticCredsCreate(),
 			//		b.pathListStaticRoles(),
 			// b.pathRotateCredentials(),

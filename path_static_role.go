@@ -104,6 +104,19 @@ func (b *backend) pathStaticRoleCrupdate(ctx context.Context, req *logical.Reque
 		}
 	}
 
+	bt, err := json.Marshal(role)
+	if err != nil {
+		panic(err)
+	}
+
+	err = req.Storage.Put(ctx, &logical.StorageEntry{
+		Key:   PathStaticRole + "/" + name.(string),
+		Value: bt,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 }
 
@@ -119,7 +132,6 @@ func (b *backend) pathStaticRoleRead(ctx context.Context, req *logical.Request, 
 
 	d := map[string]interface{}{}
 	d["username"] = role.Username
-	d["password"] = role.Password
 
 	role.PopulateAutomatedRotationData(d)
 
