@@ -49,7 +49,7 @@ func (b *backend) pathStaticCredRead(ctx context.Context, req *logical.Request, 
 
 	var t time.Time
 	var checkedTTL bool
-	if role.ShouldRegisterRotationJob() {
+	if role.HasRotationParams() {
 		t, err = b.System().GetRotationInformation(ctx, &rotation.RotationInfoRequest{
 			ReqMount: req.MountPoint,
 			// the static-role method is what sets up the credential, so we use that to look up the credential in the rotation manager.
