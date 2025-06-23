@@ -39,3 +39,9 @@ vault plugin reload -type=secret -plugin=testing -scope=global
 ###
 Another configuration is `rotation_wait` - setting this controls how long the plugin takes to "rotate" a credential when
 it recieves the request from the Rotation Manager. This is implemented as a `time.Sleep` call.
+
+### Static Roles
+Static roles can be created with `vault write testing/static-role/<name> username=<something> password=<something>` and any rotation fields
+you want, like `rotation_period` or `rotation_schedule` and `rotation_window`
+
+The credential can be retrieved with `vault read testing/static-cred/<name>`. The password will be rotated to some random string.
