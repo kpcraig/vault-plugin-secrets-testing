@@ -57,6 +57,7 @@ require (
 	github.com/hashicorp/go-secure-stdlib/parseutil v0.2.0 // indirect
 	github.com/hashicorp/go-secure-stdlib/permitpool v1.0.0 // indirect
 	github.com/hashicorp/go-secure-stdlib/plugincontainer v0.4.1 // indirect
+	github.com/hashicorp/go-secure-stdlib/regexp v1.0.0 // indirect
 	github.com/hashicorp/go-secure-stdlib/strutil v0.1.2 // indirect
 	github.com/hashicorp/go-sockaddr v1.0.7 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect

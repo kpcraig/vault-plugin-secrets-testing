@@ -48,9 +48,10 @@ func (b *backend) pathStaticCredRead(ctx context.Context, req *logical.Request, 
 	}
 
 	var t time.Time
+	var ttl time.Duration
 	var checkedTTL bool
 	if role.HasRotationParams() {
-		t, err = b.System().GetRotationInformation(ctx, &rotation.RotationInfoRequest{
+		resp, err := b.System().GetRotationInformation(ctx, &rotation.RotationInfoRequest{
 			// the static-role method is what sets up the credential, so we use that to look up the credential in the rotation manager.
 			ReqPath: PathStaticRole + "/" + name.(string),
 		})
@@ -58,13 +59,15 @@ func (b *backend) pathStaticCredRead(ctx context.Context, req *logical.Request, 
 			panic(err)
 		}
 		checkedTTL = true
+		t = resp.NextRotationTime
+		ttl = resp.TTL
 	}
 
 	out := map[string]interface{}{}
 	out["username"] = role.Username
 	out["password"] = role.Password
 	if checkedTTL {
-		out["ttl"] = t.Sub(time.Now()).Seconds()
+		out["ttl"] = ttl.Seconds()
 		out["expire_time"] = t.Format(time.ANSIC)
 	}
 
