@@ -48,7 +48,7 @@ func (b *backend) pathStaticCredRead(ctx context.Context, req *logical.Request, 
 	}
 
 	var t time.Time
-	var ttl time.Duration
+	var ttl int64
 	var checkedTTL bool
 	if role.HasRotationParams() {
 		resp, err := b.System().GetRotationInformation(ctx, &rotation.RotationInfoRequest{
@@ -67,7 +67,7 @@ func (b *backend) pathStaticCredRead(ctx context.Context, req *logical.Request, 
 	out["username"] = role.Username
 	out["password"] = role.Password
 	if checkedTTL {
-		out["ttl"] = ttl.Seconds()
+		out["ttl"] = ttl
 		out["expire_time"] = t.Format(time.ANSIC)
 	}
 
